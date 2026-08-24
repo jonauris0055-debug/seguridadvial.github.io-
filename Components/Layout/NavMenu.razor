@@ -1,0 +1,37 @@
+﻿<div class="top-row ps-3 navbar navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand text-wrap fw-bold fs-6" href="">
+            🕊️ Fuente de Luz
+        </a>
+    </div>
+</div>
+
+<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+
+<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
+    <nav class="flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <i class="bi bi-house-door-fill me-2"></i> Inicio
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="trivia">
+                <i class="bi bi-controller me-2"></i> Trivia Ley 63-17
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="simulador">
+                <i class="bi bi-shield-slash-fill me-2"></i> Simulador de Licencia
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="cuentas-por-cobrar">
+                <i class="bi bi-wallet2 me-2"></i> Cuentas por Cobrar
+            </NavLink>
+        </div>
+    </nav>
+</div>

@@ -1,0 +1,140 @@
+﻿@page "/trivia"
+@rendermode InteractiveServer
+
+<PageTitle>Trivia Ley 63-17 - Fuente de Luz</PageTitle>
+
+<div class="container py-4" style="max-width: 750px;">
+    <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+        <div class="card-header text-white text-center py-3" style="background-color: #0f392b;">
+            <h3 class="mb-0 fw-bold">🚦 Trivia de Seguridad Vial RD</h3>
+            <small class="text-white-50">Fuente de Luz Memorial Park • Ley 63-17</small>
+        </div>
+
+        <div class="card-body p-4 p-md-5">
+            @if (juegoTerminado)
+            {
+                <div class="text-center py-4">
+                    <div class="display-1 text-warning mb-3">🏆</div>
+                    <h2 class="fw-bold mb-2">¡Trivia Completada!</h2>
+                    <p class="fs-4 text-muted">Obtuviste <strong>@puntaje</strong> de <strong>@preguntas.Count</strong> respuestas correctas</p>
+
+                    <div class="progress my-4 rounded-pill" style="height: 20px;">
+                        <div class="progress-bar bg-success progress-bar-striped progress-bar-animated"
+                             style="width: @((puntaje * 100) / preguntas.Count)%">
+                            @((puntaje * 100) / preguntas.Count)%
+                        </div>
+                    </div>
+
+                    @if (puntaje == preguntas.Count)
+                    {
+                        <div class="alert alert-success rounded-3 fs-5" role="alert">
+                            🌟 ¡Excelente trabajo! Tienes un conocimiento perfecto de las normas de tránsito.
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info rounded-3 fs-5" role="alert">
+                            👍 ¡Buen esfuerzo! Repasar la Ley 63-17 ayuda a prevenir accidentes en la carretera.
+                        </div>
+                    }
+
+                    <button class="btn btn-primary btn-lg mt-3 px-5 rounded-pill shadow-sm" @onclick="ReiniciarJuego">
+                        <i class="bi bi-arrow-counterclockwise me-2"></i> Intentar de nuevo
+                    </button>
+                </div>
+            }
+            else
+            {
+                var preguntaActual = preguntas[indicePreguntaActual];
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="badge bg-dark fs-6 px-3 py-2 rounded-pill">Pregunta @(indicePreguntaActual + 1) de @preguntas.Count</span>
+                    <span class="badge bg-warning text-dark fs-6 px-3 py-2 rounded-pill">Puntos: @puntaje</span>
+                </div>
+
+                <div class="progress mb-4 rounded-pill" style="height: 10px;">
+                    <div class="progress-bar bg-primary" style="width: @(((indicePreguntaActual) * 100) / preguntas.Count)%"></div>
+                </div>
+
+                <h4 class="fw-bold mb-4 text-dark fs-5">@preguntaActual.Enunciado</h4>
+
+                <div class="d-grid gap-3">
+                    @for (int i = 0; i < preguntaActual.Opciones.Count; i++)
+                    {
+                        int opcionIndice = i;
+                        <button class="btn btn-outline-dark text-start p-3 rounded-4 shadow-sm fw-semibold fs-6 border-2 transition-all d-flex align-items-center"
+                                @onclick="() => SeleccionarOpcion(opcionIndice)">
+                            <span class="badge bg-primary rounded-circle me-3 p-2" style="width: 35px; height: 35px;">@((char)('A' + opcionIndice))</span>
+                            <span>@preguntaActual.Opciones[opcionIndice]</span>
+                        </button>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private int indicePreguntaActual = 0;
+    private int puntaje = 0;
+    private bool juegoTerminado = false;
+
+    private class Pregunta
+    {
+        public string Enunciado { get; set; } = string.Empty;
+        public List<string> Opciones { get; set; } = new();
+        public int RespuestaCorrecta { get; set; }
+    }
+
+    private List<Pregunta> preguntas = new()
+    {
+        new Pregunta
+        {
+            Enunciado = "¿Cuál es el límite máximo permisible de alcohol en sangre para conductores de transporte público y de carga según la Ley 63-17?",
+            Opciones = new List<string> { "0.5 g/l", "0.2 g/l", "0.0 g/l (Tolerancia Cero)", "1.0 g/l" },
+            RespuestaCorrecta = 2
+        },
+        new Pregunta
+        {
+            Enunciado = "¿Qué entidad gubernamental regula y supervisa la movilidad y el tránsito terrestre en República Dominicana?",
+            Opciones = new List<string> { "DIGESETT", "INTRANT", "MOPC", "AMET" },
+            RespuestaCorrecta = 1
+        },
+        new Pregunta
+        {
+            Enunciado = "En motocicletas, ¿quiénes deben usar casco protector homologado según la reglamentación vial?",
+            Opciones = new List<string> { "Únicamente el conductor", "Únicamente el pasajero", "Tanto el conductor como el acompañante", "Nadie si viajan en avenidas secundarias" },
+            RespuestaCorrecta = 2
+        },
+        new Pregunta
+        {
+            Enunciado = "Está totalmente prohibido el uso de dispositivos celulares al conducir, exceptuando únicamente cuando:",
+            Opciones = new List<string> { "Se utilice un sistema manos libres integrado", "El vehículo esté detenido en luz roja", "Se escuchen audios de voz breves", "Nunca está permitido bajo ninguna circunstancia" },
+            RespuestaCorrecta = 0
+        }
+    };
+
+    private void SeleccionarOpcion(int indiceOpcion)
+    {
+        if (indiceOpcion == preguntas[indicePreguntaActual].RespuestaCorrecta)
+        {
+            puntaje++;
+        }
+
+        if (indicePreguntaActual + 1 < preguntas.Count)
+        {
+            indicePreguntaActual++;
+        }
+        else
+        {
+            juegoTerminado = true;
+        }
+    }
+
+    private void ReiniciarJuego()
+    {
+        indicePreguntaActual = 0;
+        puntaje = 0;
+        juegoTerminado = false;
+    }
+}

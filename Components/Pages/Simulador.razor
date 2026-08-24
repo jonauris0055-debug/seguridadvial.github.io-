@@ -1,0 +1,122 @@
+﻿@page "/simulador"
+@rendermode InteractiveServer
+
+<PageTitle>Simulador de Puntos - Fuente de Luz</PageTitle>
+
+<div class="container py-4" style="max-width: 800px;">
+    <div class="card border-0 shadow-lg rounded-4 overflow-hidden mb-4">
+        <div class="card-header text-white text-center py-3 bg-danger">
+            <h3 class="mb-0 fw-bold">📉 Simulador de Puntos por Infracción</h3>
+            <small class="text-white-50">Evalúa el impacto de tus acciones en la carretera</small>
+        </div>
+
+        <div class="card-body p-4 p-md-5">
+            <div class="text-center mb-4">
+                <p class="text-muted mb-1">Puntos Disponibles en tu Licencia</p>
+                <h1 class="display-2 fw-bold @(puntosLicencia > 10 ? "text-success" : puntosLicencia > 0 ? "text-warning" : "text-danger")">
+                    @puntosLicencia / 20
+                </h1>
+
+                <div class="progress rounded-pill my-3" style="height: 15px;">
+                    <div class="progress-bar @(puntosLicencia > 10 ? "bg-success" : puntosLicencia > 0 ? "bg-warning" : "bg-danger")"
+                         style="width: @((puntosLicencia * 100) / 20)%"></div>
+                </div>
+
+                @if (puntosLicencia <= 0)
+                {
+                    <div class="alert alert-danger rounded-3" role="alert">
+                        🚫 <strong>¡Licencia Suspendida!</strong> Has agotado todos tus puntos debido a infracciones acumuladas.
+                    </div>
+                }
+            </div>
+
+            <h5 class="fw-bold mb-3">Cometer una infracción:</h5>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <button class="btn btn-outline-danger w-100 p-3 text-start rounded-3 shadow-sm d-flex justify-content-between align-items-center"
+                            disabled="@(puntosLicencia <= 0)" @onclick='() => RestarPuntos(4, "Pasarse un semáforo en rojo")'>
+                        <div>
+                            <strong>Semáforo en rojo</strong><br>
+                            <small class="text-muted">Infracción grave</small>
+                        </div>
+                        <span class="badge bg-danger fs-6">-4 Pts</span>
+                    </button>
+                </div>
+
+                <div class="col-md-6">
+                    <button class="btn btn-outline-danger w-100 p-3 text-start rounded-3 shadow-sm d-flex justify-content-between align-items-center"
+                            disabled="@(puntosLicencia <= 0)" @onclick='() => RestarPuntos(3, "Uso del celular al conducir")'>
+                        <div>
+                            <strong>Uso de celular</strong><br>
+                            <small class="text-muted">Distracción al volante</small>
+                        </div>
+                        <span class="badge bg-danger fs-6">-3 Pts</span>
+                    </button>
+                </div>
+
+                <div class="col-md-6">
+                    <button class="btn btn-outline-danger w-100 p-3 text-start rounded-3 shadow-sm d-flex justify-content-between align-items-center"
+                            disabled="@(puntosLicencia <= 0)" @onclick='() => RestarPuntos(5, "Conducir bajo efectos del alcohol")'>
+                        <div>
+                            <strong>Conducir con alcohol</strong><br>
+                            <small class="text-muted">Infracción muy grave</small>
+                        </div>
+                        <span class="badge bg-danger fs-6">-5 Pts</span>
+                    </button>
+                </div>
+
+                <div class="col-md-6">
+                    <button class="btn btn-outline-danger w-100 p-3 text-start rounded-3 shadow-sm d-flex justify-content-between align-items-center"
+                            disabled="@(puntosLicencia <= 0)" @onclick='() => RestarPuntos(2, "No llevar cinturón de seguridad")'>
+                        <div>
+                            <strong>Sin cinturón de seguridad</strong><br>
+                            <small class="text-muted">Falta de protección</small>
+                        </div>
+                        <span class="badge bg-danger fs-6">-2 Pts</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <button class="btn btn-secondary rounded-pill px-4" @onclick="Restablecer">
+                    <i class="bi bi-arrow-counterclockwise me-1"></i> Restablecer Puntos
+                </button>
+            </div>
+
+            @if (historial.Any())
+            {
+                <hr class="my-4">
+                <h6 class="fw-bold mb-3">Historial de Infracciones:</h6>
+                <ul class="list-group list-group-flush rounded-3">
+                    @foreach (var item in historial)
+                    {
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span><i class="bi bi-dash-circle-fill text-danger me-2"></i>@item</span>
+                        </li>
+                    }
+                </ul>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private int puntosLicencia = 20;
+    private List<string> historial = new();
+
+    private void RestarPuntos(int puntos, string infraccion)
+    {
+        if (puntosLicencia > 0)
+        {
+            puntosLicencia = Math.Max(0, puntosLicencia - puntos);
+            historial.Insert(0, $"{infraccion} (-{puntos} pts)");
+        }
+    }
+
+    private void Restablecer()
+    {
+        puntosLicencia = 20;
+        historial.Clear();
+    }
+}
